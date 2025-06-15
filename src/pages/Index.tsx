@@ -157,7 +157,7 @@ const Index = () => {
                           <div key={index} className="flex justify-between items-center text-sm">
                             <span className="text-gray-300 truncate">{card.title}</span>
                             {card.rarity && (
-                              <Badge variant="outline" className="text-xs ml-2">
+                              <Badge variant="outline" className="text-xs ml-2 border-gray-500 text-gray-300">
                                 {card.rarity}
                               </Badge>
                             )}
