@@ -9,6 +9,54 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      challenges: {
+        Row: {
+          countdown_days: number | null
+          countdown_formatted: string | null
+          countdown_hours: number | null
+          countdown_minutes: number | null
+          countdown_seconds: number | null
+          created_at: string | null
+          description: string | null
+          full_url: string | null
+          id: string
+          scraped_at: string | null
+          title: string
+          updated_at: string | null
+          url: string | null
+        }
+        Insert: {
+          countdown_days?: number | null
+          countdown_formatted?: string | null
+          countdown_hours?: number | null
+          countdown_minutes?: number | null
+          countdown_seconds?: number | null
+          created_at?: string | null
+          description?: string | null
+          full_url?: string | null
+          id?: string
+          scraped_at?: string | null
+          title: string
+          updated_at?: string | null
+          url?: string | null
+        }
+        Update: {
+          countdown_days?: number | null
+          countdown_formatted?: string | null
+          countdown_hours?: number | null
+          countdown_minutes?: number | null
+          countdown_seconds?: number | null
+          created_at?: string | null
+          description?: string | null
+          full_url?: string | null
+          id?: string
+          scraped_at?: string | null
+          title?: string
+          updated_at?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           content: string | null
@@ -27,9 +75,69 @@ export type Database = {
         }
         Relationships: []
       }
+      required_cards: {
+        Row: {
+          challenge_id: string | null
+          created_at: string | null
+          id: string
+          rarity: string | null
+          title: string
+          type: string | null
+        }
+        Insert: {
+          challenge_id?: string | null
+          created_at?: string | null
+          id?: string
+          rarity?: string | null
+          title: string
+          type?: string | null
+        }
+        Update: {
+          challenge_id?: string | null
+          created_at?: string | null
+          id?: string
+          rarity?: string | null
+          title?: string
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "required_cards_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "required_cards_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges_with_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      challenges_with_cards: {
+        Row: {
+          countdown_days: number | null
+          countdown_formatted: string | null
+          countdown_hours: number | null
+          countdown_minutes: number | null
+          countdown_seconds: number | null
+          created_at: string | null
+          description: string | null
+          full_url: string | null
+          id: string | null
+          required_cards: Json | null
+          scraped_at: string | null
+          title: string | null
+          updated_at: string | null
+          url: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
