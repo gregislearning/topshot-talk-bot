@@ -1,11 +1,46 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Trophy, Users, Loader2, Target, BarChart3 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, Trophy, Users, Loader2, Target, BarChart3, LogOut, User } from "lucide-react";
 import { useChallenges } from "@/hooks/useChallenges";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Index = () => {
   const { data: challenges, isLoading, error } = useChallenges();
+  const { user, loading: authLoading, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
+  // Show loading while checking auth state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center">
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin text-purple-400" />
+          <span className="text-gray-300">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null;
+  }
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -33,14 +68,33 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black p-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-              NBA TopShot Challenges
-            </h1>
-            <p className="text-xl text-gray-300">
-              Complete challenges to earn exclusive rewards and boost your collector score
-            </p>
+          {/* Header with user info */}
+          <div className="flex justify-between items-center mb-8">
+            <div className="text-center flex-1">
+              <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                NBA TopShot Challenges
+              </h1>
+              <p className="text-xl text-gray-300">
+                Complete challenges to earn exclusive rewards and boost your collector score
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-gray-300">
+                <User className="h-4 w-4" />
+                <span className="text-sm">{user.email}</span>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSignOut}
+                className="border-gray-600 text-gray-300 hover:bg-gray-800"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
+          
           <div className="flex justify-center items-center h-64">
             <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
             <span className="ml-2 text-gray-300">Loading challenges...</span>
@@ -54,13 +108,31 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black p-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-              NBA TopShot Challenges
-            </h1>
-            <p className="text-xl text-red-400">
-              Error loading challenges. Please try again later.
-            </p>
+          {/* Header with user info */}
+          <div className="flex justify-between items-center mb-8">
+            <div className="text-center flex-1">
+              <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                NBA TopShot Challenges
+              </h1>
+              <p className="text-xl text-red-400">
+                Error loading challenges. Please try again later.
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-gray-300">
+                <User className="h-4 w-4" />
+                <span className="text-sm">{user.email}</span>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSignOut}
+                className="border-gray-600 text-gray-300 hover:bg-gray-800"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -71,13 +143,31 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black p-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-              NBA TopShot Challenges
-            </h1>
-            <p className="text-xl text-gray-300">
-              No active challenges at the moment. Check back soon!
-            </p>
+          {/* Header with user info */}
+          <div className="flex justify-between items-center mb-8">
+            <div className="text-center flex-1">
+              <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                NBA TopShot Challenges
+              </h1>
+              <p className="text-xl text-gray-300">
+                No active challenges at the moment. Check back soon!
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-gray-300">
+                <User className="h-4 w-4" />
+                <span className="text-sm">{user.email}</span>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSignOut}
+                className="border-gray-600 text-gray-300 hover:bg-gray-800"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -87,13 +177,31 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black p-6">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-            NBA TopShot Challenges
-          </h1>
-          <p className="text-xl text-gray-300">
-            Complete challenges to earn exclusive rewards and boost your collector score
-          </p>
+        {/* Header with user info */}
+        <div className="flex justify-between items-center mb-8">
+          <div className="text-center flex-1">
+            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              NBA TopShot Challenges
+            </h1>
+            <p className="text-xl text-gray-300">
+              Complete challenges to earn exclusive rewards and boost your collector score
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-gray-300">
+              <User className="h-4 w-4" />
+              <span className="text-sm">{user.email}</span>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleSignOut}
+              className="border-gray-600 text-gray-300 hover:bg-gray-800"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
