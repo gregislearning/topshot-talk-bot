@@ -9,6 +9,84 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      challenge_analysis: {
+        Row: {
+          ai_raw_response: string | null
+          analysis_duration_ms: number | null
+          analysis_method: string
+          analysis_summary: string | null
+          analyzer_version: string | null
+          can_complete: boolean
+          challenge_id: string
+          challenge_scraped_at: string | null
+          challenge_title: string
+          completion_percentage: number
+          created_at: string | null
+          exact_matches: number | null
+          id: string
+          library_size: number
+          matching_cards: Json | null
+          missing_cards: number | null
+          missing_cards_details: Json | null
+          potential_matches: number | null
+          potential_matches_details: Json | null
+          rarity_upgrades: number | null
+          recommendations: Json | null
+          total_required_cards: number
+          updated_at: string | null
+        }
+        Insert: {
+          ai_raw_response?: string | null
+          analysis_duration_ms?: number | null
+          analysis_method: string
+          analysis_summary?: string | null
+          analyzer_version?: string | null
+          can_complete: boolean
+          challenge_id: string
+          challenge_scraped_at?: string | null
+          challenge_title: string
+          completion_percentage: number
+          created_at?: string | null
+          exact_matches?: number | null
+          id?: string
+          library_size: number
+          matching_cards?: Json | null
+          missing_cards?: number | null
+          missing_cards_details?: Json | null
+          potential_matches?: number | null
+          potential_matches_details?: Json | null
+          rarity_upgrades?: number | null
+          recommendations?: Json | null
+          total_required_cards: number
+          updated_at?: string | null
+        }
+        Update: {
+          ai_raw_response?: string | null
+          analysis_duration_ms?: number | null
+          analysis_method?: string
+          analysis_summary?: string | null
+          analyzer_version?: string | null
+          can_complete?: boolean
+          challenge_id?: string
+          challenge_scraped_at?: string | null
+          challenge_title?: string
+          completion_percentage?: number
+          created_at?: string | null
+          exact_matches?: number | null
+          id?: string
+          library_size?: number
+          matching_cards?: Json | null
+          missing_cards?: number | null
+          missing_cards_details?: Json | null
+          potential_matches?: number | null
+          potential_matches_details?: Json | null
+          rarity_upgrades?: number | null
+          recommendations?: Json | null
+          total_required_cards?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       challenges: {
         Row: {
           countdown_days: number | null
@@ -119,6 +197,39 @@ export type Database = {
       }
     }
     Views: {
+      analysis_method_comparison: {
+        Row: {
+          challenge_id: string | null
+          challenge_title: string | null
+          huggingface_can_complete: boolean | null
+          huggingface_completion: number | null
+          last_analyzed: string | null
+          methods_tested: number | null
+          ollama_can_complete: boolean | null
+          ollama_completion: number | null
+          openai_can_complete: boolean | null
+          openai_completion: number | null
+          rule_based_can_complete: boolean | null
+          rule_based_completion: number | null
+        }
+        Relationships: []
+      }
+      challenge_analysis_summary: {
+        Row: {
+          analysis_method: string | null
+          analysis_rank: number | null
+          analysis_summary: string | null
+          can_complete: boolean | null
+          challenge_id: string | null
+          challenge_title: string | null
+          completion_percentage: number | null
+          created_at: string | null
+          exact_matches: number | null
+          missing_cards: number | null
+          rarity_upgrades: number | null
+        }
+        Relationships: []
+      }
       challenges_with_cards: {
         Row: {
           countdown_days: number | null
@@ -135,6 +246,22 @@ export type Database = {
           title: string | null
           updated_at: string | null
           url: string | null
+        }
+        Relationships: []
+      }
+      latest_challenge_analysis: {
+        Row: {
+          analysis_method: string | null
+          analysis_rank: number | null
+          analysis_summary: string | null
+          can_complete: boolean | null
+          challenge_id: string | null
+          challenge_title: string | null
+          completion_percentage: number | null
+          created_at: string | null
+          exact_matches: number | null
+          missing_cards: number | null
+          rarity_upgrades: number | null
         }
         Relationships: []
       }

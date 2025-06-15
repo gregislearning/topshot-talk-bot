@@ -1,39 +1,11 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Trophy, Users, Loader2 } from "lucide-react";
+import { Calendar, Trophy, Users, Loader2, Target, BarChart3 } from "lucide-react";
 import { useChallenges } from "@/hooks/useChallenges";
 
 const Index = () => {
   const { data: challenges, isLoading, error } = useChallenges();
-
-  // Helper function to extract difficulty from description or title
-  const getDifficulty = (title: string, description: string | null) => {
-    const text = `${title} ${description || ''}`.toLowerCase();
-    if (text.includes('rookie') || text.includes('easy')) return 'Easy';
-    if (text.includes('hard') || text.includes('legendary')) return 'Hard';
-    return 'Medium';
-  };
-
-  // Helper function to generate mock progress data
-  const getProgressData = (id: string) => {
-    const hash = id.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.charCodeAt(0);
-      return a & a;
-    }, 0);
-    const progress = Math.abs(hash) % 8 + 1;
-    const total = Math.abs(hash) % 20 + 5;
-    return { progress: Math.min(progress, total), total };
-  };
-
-  // Helper function to generate mock participants
-  const getParticipants = (id: string) => {
-    const hash = id.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.charCodeAt(0);
-      return a & a;
-    }, 0);
-    return Math.abs(hash) % 2000 + 500;
-  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -47,6 +19,14 @@ const Index = () => {
   const formatDeadline = (countdownFormatted: string | null) => {
     if (!countdownFormatted) return "TBD";
     return countdownFormatted;
+  };
+
+  const getCompletionStatus = (analysis: any) => {
+    if (!analysis) return { canComplete: false, percentage: 0 };
+    return {
+      canComplete: analysis.can_complete || false,
+      percentage: analysis.completion_percentage || 0
+    };
   };
 
   if (isLoading) {
@@ -118,9 +98,9 @@ const Index = () => {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
           {challenges.map((challenge) => {
-            const difficulty = getDifficulty(challenge.title, challenge.description);
-            const { progress, total } = getProgressData(challenge.id);
-            const participants = getParticipants(challenge.id);
+            const requiredCards = challenge.required_cards as any[] || [];
+            const { canComplete, percentage } = getCompletionStatus(challenge.analysis);
+            const totalCards = requiredCards.length;
 
             return (
               <Card key={challenge.id} className="hover:shadow-xl transition-shadow duration-300 border-l-4 border-l-purple-500 bg-gray-800 border-gray-700">
@@ -129,8 +109,8 @@ const Index = () => {
                     <CardTitle className="text-xl font-bold text-gray-100">
                       {challenge.title}
                     </CardTitle>
-                    <Badge className={getDifficultyColor(difficulty)}>
-                      {difficulty}
+                    <Badge className={canComplete ? "bg-green-900 text-green-200" : "bg-red-900 text-red-200"}>
+                      {canComplete ? "Completable" : "Missing Cards"}
                     </Badge>
                   </div>
                   <CardDescription className="text-gray-400">
@@ -139,6 +119,54 @@ const Index = () => {
                 </CardHeader>
                 
                 <CardContent className="space-y-4">
+                  {challenge.analysis && (
+                    <div className="bg-gray-900 p-3 rounded-lg border border-gray-700">
+                      <div className="flex items-center gap-2 mb-2">
+                        <BarChart3 className="h-4 w-4 text-blue-400" />
+                        <span className="font-semibold text-blue-300">Analysis Results</span>
+                      </div>
+                      <div className="space-y-1 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Completion:</span>
+                          <span className="text-blue-200">{percentage}%</span>
+                        </div>
+                        {challenge.analysis.exact_matches !== null && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Exact Matches:</span>
+                            <span className="text-green-200">{challenge.analysis.exact_matches}</span>
+                          </div>
+                        )}
+                        {challenge.analysis.missing_cards !== null && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Missing Cards:</span>
+                            <span className="text-red-200">{challenge.analysis.missing_cards}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {totalCards > 0 && (
+                    <div className="bg-gray-900 p-3 rounded-lg border border-gray-700">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Target className="h-4 w-4 text-purple-400" />
+                        <span className="font-semibold text-purple-300">Required Cards ({totalCards})</span>
+                      </div>
+                      <div className="space-y-1 max-h-32 overflow-y-auto">
+                        {requiredCards.map((card, index) => (
+                          <div key={index} className="flex justify-between items-center text-sm">
+                            <span className="text-gray-300 truncate">{card.title}</span>
+                            {card.rarity && (
+                              <Badge variant="outline" className="text-xs ml-2">
+                                {card.rarity}
+                              </Badge>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="bg-gray-900 p-3 rounded-lg border border-gray-700">
                     <div className="flex items-center gap-2 mb-1">
                       <Trophy className="h-4 w-4 text-purple-400" />
@@ -152,26 +180,24 @@ const Index = () => {
                       <Calendar className="h-4 w-4" />
                       <span>Due: {formatDeadline(challenge.countdown_formatted)}</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="h-4 w-4" />
-                      <span>{participants.toLocaleString()} participants</span>
-                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-medium text-gray-200">Progress</span>
-                      <span className="text-gray-400">
-                        {progress}/{total} completed
-                      </span>
+                  {challenge.analysis && (
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="font-medium text-gray-200">Progress</span>
+                        <span className="text-gray-400">
+                          {percentage}% completed
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-700 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${percentage}%` }}
+                        ></div>
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-700 rounded-full h-2">
-                      <div 
-                        className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${(progress / total) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             );
